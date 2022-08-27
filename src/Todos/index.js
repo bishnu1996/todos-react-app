@@ -1,26 +1,30 @@
 import "./style.css";
 import { useState } from "react";
-
-const initialTodos = [{
-  todos: "",
-}];
-
+import TodoList from "../TodoList";
 const Todos = () => {
-  const [todos, setTodos] = useState(initialTodos);
+  const [inputData, setInputData] = useState("");
+  const [todosList, setTodosList] = useState([]);
 
+  const onTextHandler = (event) => {
+    setInputData(event.target.value);
+  };
   const addTodos = (e) => {
     e.preventDefault();
-    console.log(todos);
-  };
-  //   const [text, setText] = useState("");
-  const onTextHandler = (e) => {
-    setTodos([{
-      ...todos,
-      [e.target.name]: e.target.value.trim(),
-    }]);
-    console.log(e.target.value);
+    if (inputData.length > 0) {
+      setTodosList((items) => {
+        return [...items, inputData];
+      });
+      setInputData("");
+    }
   };
 
+  const deleteData = (id)=>{
+    setTodosList((items)=>{
+      return items.filter((todoItem,index)=>{
+        return index !== id;
+      })
+    })
+  }
   return (
     <div className="todos-app">
       <h1>Todos</h1>
@@ -31,17 +35,22 @@ const Todos = () => {
           id="input"
           name="todos"
           placeholder="Enter the todo"
+          value={inputData}
           onChange={onTextHandler}
         />
         <ul className="totos" id="todos">
-            {todos.map((item,index)=>(
-                 <li key={index}>{item.todos}</li>
-            ))}
-         
+          {todosList.map((itemData, index) => (
+            <TodoList
+              itemData={itemData}
+              key={index}
+              id={index}
+              deleteData={deleteData}
+            />
+          ))}
         </ul>
       </form>
       <small>
-        left click to toggle completed <br /> right click to delete todo
+        click on todos list then delete todos
       </small>
     </div>
   );
